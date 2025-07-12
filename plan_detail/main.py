@@ -114,7 +114,7 @@ def fetch_plans(accommodation_id, adult_count):
                       node {
                         planId
                         name
-                        meal { code name }
+                        meal { code }
                       }
                     }
                     pageInfo {
@@ -166,7 +166,6 @@ def fetch_rooms(accommodation_id, plan_id, adult_count):
                     room {
                       roomId
                       name
-                      capacityMax
                     }
                   }
                 }

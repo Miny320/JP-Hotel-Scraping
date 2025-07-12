@@ -40,4 +40,4 @@ url = "https://www.ikyu.com/graphql?lang=ja-JP"
 
 # Use the hotel_detail/ikyu_all_hotel.json as the input file for hotel data
 input_ids_file = "../hotel_detail/ikyu_all_hotel.json"
-final_file = "ikyu_all_hotels_final.json" 
+final_file = "ikyu_all_hotels.jsonl" 

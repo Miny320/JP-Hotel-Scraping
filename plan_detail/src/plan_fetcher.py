@@ -28,7 +28,7 @@ def fetch_plans(accommodation_id, adult_count):
                       node {
                         planId
                         name
-                        meal { code name }
+                        meal { code }
                       }
                     }
                     pageInfo {
