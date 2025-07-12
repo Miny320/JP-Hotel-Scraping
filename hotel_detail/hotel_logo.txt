@@ -1,0 +1,50 @@
+{
+    "_id": {
+        "$oid": "68684bc8ca800a335bef7208"
+    },
+    "process_hash_id": "9234324ddf6b4176b57d803a925b7961",
+    "current_state": "FINISHED",
+    "detailed_stats": {
+        "hotels_skipped": {
+            "$numberInt": "0"
+        },
+        "hotels_alive": {
+            "$numberInt": "5473"
+        },
+        "hotels_dead": {
+            "$numberInt": "0"
+        },
+        "hotels_has_logos": {
+            "$numberInt": "0"
+        },
+        "hotels_no_logos": {
+            "$numberInt": "5473"
+        }
+    },
+    "finish_reason": "finished",
+    "finish_time": {
+        "$date": "2025-07-12T07:45:47.713+0000"
+    },
+    "hotels_new": {
+        "$numberInt": "0"
+    },
+    "hotels_processed": {
+        "$numberInt": "5473"
+    },
+    "hotels_unprocessed": {
+        "$numberInt": "0"
+    },
+    "hotels_updated": {
+        "$numberInt": "5473"
+    },
+    "start_time": {
+        "$date": "2025-07-12T07:42:01.507+0000"
+    },
+    "total_mongo_hotels": {
+        "$numberInt": "5473"
+    },
+    "total_sitemap_hotels": {
+        "$numberInt": "5473"
+    },
+    "total_time": "0:03:46.205297"
+}
