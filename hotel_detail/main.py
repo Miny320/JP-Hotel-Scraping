@@ -1,9 +1,13 @@
-import os
+from dotenv import load_dotenv
+load_dotenv()
+
 import json
-from src.hotel_fetcher import HotelFetcher, stream_hotels_to_mongo
+from common.mongo import get_mongo_collections
+from src.hotel_fetcher import HotelFetcher
 
 if __name__ == "__main__":
-    client, hotels_collection = stream_hotels_to_mongo()
+    """Main entry point for hotel metadata scraping and upload to MongoDB."""
+    client, hotels_collection, _, _ = get_mongo_collections()
     fetcher = HotelFetcher(hotels_collection=hotels_collection)
     _, log_data = fetcher.fetch_all_hotels()
     # Upload hotel log directly to MongoDB (no local file)

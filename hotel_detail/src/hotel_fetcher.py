@@ -3,8 +3,8 @@ import time
 import logging
 import requests
 from typing import List, Dict, Any
-from .config import PROXIES, HEADERS, URL
-from .utils import get_last_updated_at, get_process_hash_id, to_e164_jp_phone
+from common.config import PROXIES, HEADERS, URL
+from common.utils import get_last_updated_at, get_process_hash_id, to_e164_jp_phone, infinite_retry_post
 import pymongo
 import os
 from pymongo import UpdateOne
@@ -14,6 +14,9 @@ import concurrent.futures
 logging.basicConfig(level=logging.INFO)
 
 def stream_hotels_to_mongo(mongodb_uri=None):
+    """
+    Connect to MongoDB and return client and hotels collection for hotel data.
+    """
     mongodb_uri = (
         "mongodb://myfamily0402:UohZ4dEi5Ff0uD8J@"
         "ac-irxctku-shard-00-00.rgnmyxs.mongodb.net:27017,"
@@ -28,10 +31,19 @@ def stream_hotels_to_mongo(mongodb_uri=None):
     return client, hotels_collection
 
 class HotelFetcher:
+    """
+    Fetches hotel details, locations, and manages hotel data updates.
+    """
     def __init__(self, hotels_collection=None):
+        """
+        Initialize HotelFetcher with a MongoDB hotels collection.
+        """
         self.hotels_collection = hotels_collection
 
     def fetch_hotel_detail(self, hotel_id):
+        """
+        Fetch detailed information for a single hotel by ID.
+        """
         detail_query = '''
         query AccommodationDetail($accommodationId: ID!) {
           accommodationDetail(accommodationId: $accommodationId) {
@@ -51,10 +63,13 @@ class HotelFetcher:
             "variables": variables,
             "operationName": "AccommodationDetail"
         }
-        data = self.infinite_retry_post(payload)
+        data = infinite_retry_post(payload)
         return data.get('data', {}).get('accommodationDetail', {})
 
     def fetch_hotel_location(self, hotel_id):
+        """
+        Fetch latitude, longitude, and address for a hotel by ID.
+        """
         location_query = '''
         query AccommodationMap($accommodationId: AccommodationIdScalar!) {
           accommodation(accommodationId: $accommodationId) {
@@ -73,7 +88,7 @@ class HotelFetcher:
             "variables": variables,
             "operationName": "AccommodationMap"
         }
-        data = self.infinite_retry_post(payload)
+        data = infinite_retry_post(payload)
         acc = data.get('data', {}).get('accommodation', {})
         if acc and acc.get('latitude') is not None and acc.get('longitude') is not None:
             return {
@@ -102,24 +117,10 @@ class HotelFetcher:
         # Compare the cleaned data
         return existing_copy != new_copy
 
-    def infinite_retry_post(self, payload) -> any:
-        wait_time = 5
-        while True:
-            try:
-                response = requests.post(URL, headers=HEADERS, proxies=PROXIES, json=payload, timeout=60)
-                response.raise_for_status()
-                return response.json()
-            except requests.exceptions.HTTPError as e:
-                logging.error(f"HTTP error: {e.response.status_code} - {e.response.text}")
-                logging.error(f"Payload was: {json.dumps(payload, ensure_ascii=False)}")
-                time.sleep(wait_time)
-                wait_time = min(wait_time * 2, 60)
-            except Exception as e:
-                logging.error(f"Request failed: {e}. Retrying in {wait_time} seconds...")
-                time.sleep(wait_time)
-                wait_time = min(wait_time * 2, 60)
-
     def fetch_hotels_locations_batch(self, hotel_ids):
+        """
+        Fetch locations for a batch of hotel IDs.
+        """
         location_query = '''
         query AccommodationLocations($ids: [AccommodationIdScalar!]!, $first: Int!) {
           accommodations(accommodationIds: $ids, first: $first) {
@@ -139,7 +140,7 @@ class HotelFetcher:
             "variables": variables,
             "operationName": "AccommodationLocations"
         }
-        data = self.infinite_retry_post(payload)
+        data = infinite_retry_post(payload)
         accs = data.get('data', {}).get('accommodations', {}).get('edges', [])
         loc_map = {}
         addr_map = {}
@@ -155,6 +156,10 @@ class HotelFetcher:
         return loc_map, addr_map
 
     def fetch_all_hotels(self) -> int:
+        """
+        Fetch all hotels' metadata and update the MongoDB collection.
+        Returns the number of hotels processed.
+        """
         query = """
 query ListPageDataIkyu($first: Int!, $offset: Int!, $searchAccommodationsInput: SearchAccommodationsInput!, $searchRoomsInput: SearchRoomsInput!) {
   listPageIkyu: listPage(
@@ -227,7 +232,7 @@ query ListPageDataIkyu($first: Int!, $offset: Int!, $searchAccommodationsInput: 
             "variables": base_variables,
             "operationName": "ListPageDataIkyu"
         }
-        data = self.infinite_retry_post(payload)
+        data = infinite_retry_post(payload)
         accommodations = data.get('data', {}).get('listPageIkyu', {}).get('accommodations', {})
         total_count = accommodations.get('totalCount', 0)
         logging.info(f"Total accommodations found: {total_count}")
@@ -252,7 +257,7 @@ query ListPageDataIkyu($first: Int!, $offset: Int!, $searchAccommodationsInput: 
                 "variables": base_variables,
                 "operationName": "ListPageDataIkyu"
             }
-            data = self.infinite_retry_post(payload)
+            data = infinite_retry_post(payload)
             accommodations = data.get('data', {}).get('listPageIkyu', {}).get('accommodations', {})
             edges = accommodations.get('edges', [])
             batch_hotels = []

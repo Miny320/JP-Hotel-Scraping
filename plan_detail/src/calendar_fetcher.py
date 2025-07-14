@@ -1,5 +1,5 @@
 from datetime import datetime
-from .utils import infinite_retry_post
+from common.utils import infinite_retry_post
 
 def fetch_room_and_calendar(args):
     (accommodation_id, plan_id, plan_name, meal_code, breakfast, lunch, dinner,

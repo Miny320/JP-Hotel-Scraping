@@ -1,4 +1,4 @@
-from .utils import infinite_retry_post
+from common.utils import infinite_retry_post
 
 def meal_code_to_flags(meal_code):
     mapping = {

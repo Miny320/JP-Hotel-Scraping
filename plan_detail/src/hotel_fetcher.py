@@ -5,8 +5,8 @@ import time
 import signal
 import sys
 from datetime import datetime, timedelta, timezone
-from .config import input_ids_file
-from .utils import get_process_hash_id, get_last_updated_at, get_now
+from common.config import HOTEL_JSON, PLAN_FINAL_FILE
+from common.utils import get_process_hash_id, get_last_updated_at, get_now, infinite_retry_post
 from .plan_fetcher import fetch_plans, meal_code_to_flags
 from .room_fetcher import fetch_rooms_batch
 from .calendar_fetcher import fetch_room_and_calendar, fetch_calendars_batch
@@ -88,6 +88,9 @@ def read_hotel_ids_from_mongo(hotels_collection):
     return hotel_ids
 
 def run_all_hotels():
+    """
+    Main function to fetch plan and room details for all hotels and update MongoDB.
+    """
     # MongoDB setup
     mongodb_uri = (
         "mongodb://myfamily0402:UohZ4dEi5Ff0uD8J@"
@@ -186,6 +189,9 @@ def run_all_hotels():
     print(f"\nAll hotels data collection complete. Total processed: {processed_count} hotels.")
 
 def process_hotel(accommodation_id):
+    """
+    Process a single hotel: fetch plans, rooms, and calendar data, then update MongoDB.
+    """
     print(f"[Hotel {accommodation_id}] Starting processing...")
     process_hash_id = get_process_hash_id()
     last_updated_at = get_last_updated_at()

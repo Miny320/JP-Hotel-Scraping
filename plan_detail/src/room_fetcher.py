@@ -1,4 +1,4 @@
-from .utils import infinite_retry_post
+from common.utils import infinite_retry_post
 
 # New function to batch fetch rooms for multiple plans using GraphQL aliases
 def fetch_rooms_batch(accommodation_id, plan_ids, adult_count):

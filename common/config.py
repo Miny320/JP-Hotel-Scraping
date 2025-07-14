@@ -4,22 +4,21 @@ from tzlocal import get_localzone
 
 TIMEZONE = os.environ.get("SCRAPER_TIMEZONE", "UTC")
 if TIMEZONE:
-    tz = pytz.timezone(TIMEZONE)
+    TZ = pytz.timezone(TIMEZONE)
 else:
-    tz = get_localzone()
+    TZ = get_localzone()
 
-# --- Proxy configuration ---
-proxy_host = "brd.superproxy.io"
-proxy_port = 33335
-proxy_user = "brd-customer-hl_bfc03546-zone-datacenter_proxy2"
-proxy_pass = "ye6bg16kmm2m"
+PROXY_HOST = "brd.superproxy.io"
+PROXY_PORT = 33335
+PROXY_USER = "brd-customer-hl_bfc03546-zone-datacenter_proxy2"
+PROXY_PASS = "ye6bg16kmm2m"
 
-proxies = {
-    "http": f"http://{proxy_user}:{proxy_pass}@{proxy_host}:{proxy_port}",
-    "https": f"http://{proxy_user}:{proxy_pass}@{proxy_host}:{proxy_port}",
+PROXIES = {
+    "http": f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}",
+    "https": f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}",
 }
 
-headers = {
+HEADERS = {
     "accept": "*/*",
     "accept-encoding": "gzip, deflate, br, zstd",
     "accept-language": "en-US,en;q=0.9,ko;q=0.8,af;q=0.7",
@@ -36,8 +35,8 @@ headers = {
     "cookie": ""
 }
 
-url = "https://www.ikyu.com/graphql?lang=ja-JP"
+URL = "https://www.ikyu.com/graphql?lang=ja-JP"
 
-# Use the hotel_detail/ikyu_all_hotel.json as the input file for hotel data
-input_ids_file = "../hotel_detail/ikyu_all_hotel.json"
-final_file = "ikyu_all_hotels.jsonl" 
+# File paths
+HOTEL_JSON = "hotel_detail/ikyu_all_hotel.json"
+PLAN_FINAL_FILE = "plan_detail/ikyu_all_hotels.jsonl" 
