@@ -86,7 +86,7 @@ def fetch_calendars_batch(accommodation_id, room_plan_args, now_date, limit_date
     print(f"          Fetching calendars for {len(room_plan_args)} room-plan pairs...")
     
     # Limit batch size to prevent very large queries
-    BATCH_SIZE_LIMIT = 50
+    BATCH_SIZE_LIMIT = 100
     all_results = {}
     
     # Split into smaller batches if needed
@@ -178,15 +178,21 @@ def _fetch_calendars_batch_single(accommodation_id, room_plan_args, now_date, li
             # Get calendar data for this alias, with proper null checks
             cal_data = accommodation_data.get(alias)
             if cal_data is None:
-                print(f"          No calendar data for alias {alias} (plan {plan_id}, room {room_id})")
-                # Still add the plan_obj with empty prices
+                print(f"\n========== DEBUG: No calendar data for alias {alias} (plan {plan_id}, room {room_id}) ==========")
+                # Print the full response for this alias, limited to 1000 chars
+                resp_str = str(accommodation_data)
+                print(f"          Full response for alias {alias} (truncated): {resp_str[:1000]}{' ...' if len(resp_str) > 1000 else ''}")
+                print("========== END DEBUG ==========")
                 result[(plan_id, room_id)] = plan_obj
                 continue
-            
+
             calendar = cal_data.get('calendar', []) or []
             if not calendar:
-                print(f"          Empty calendar for plan {plan_id}, room {room_id}")
-                # Still add the plan_obj with empty prices
+                print(f"\n========== DEBUG: Empty calendar for plan {plan_id}, room {room_id} ==========")
+                # Print the full cal_data for this alias, limited to 1000 chars
+                cal_str = str(cal_data)
+                print(f"          cal_data for alias {alias} (truncated): {cal_str[:1000]}{' ...' if len(cal_str) > 1000 else ''}")
+                print("========== END DEBUG ==========")
                 result[(plan_id, room_id)] = plan_obj
                 continue
             

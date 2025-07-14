@@ -20,3 +20,4 @@ def to_e164_jp_phone(phone: str) -> str:
     if digits.startswith('0'):
         digits = digits[1:]
     return '+81' + digits 
+
