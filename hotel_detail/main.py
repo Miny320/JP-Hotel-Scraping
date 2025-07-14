@@ -1,9 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from dotenv import load_dotenv
 load_dotenv()
 
 import json
 from common.mongo import get_mongo_collections
 from src.hotel_fetcher import HotelFetcher
+import bson
 
 if __name__ == "__main__":
     """Main entry point for hotel metadata scraping and upload to MongoDB."""
@@ -15,8 +20,8 @@ if __name__ == "__main__":
         if log_data:
             db = client["hotel_database"]
             log_collection = db["hotels_log"]
-            # Delete existing log if it exists, then insert new one
-            log_collection.delete_one({"_id": log_data.get("_id")})
+            # Remove _id so MongoDB generates a true ObjectId
+            log_data.pop("_id", None)
             log_collection.insert_one(log_data)
             print("hotel_logo.txt uploaded to MongoDB (hotels_log collection).")
         else:

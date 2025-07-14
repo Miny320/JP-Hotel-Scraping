@@ -63,7 +63,7 @@ class HotelFetcher:
             "variables": variables,
             "operationName": "AccommodationDetail"
         }
-        data = infinite_retry_post(payload)
+        data = infinite_retry_post(payload).json()
         return data.get('data', {}).get('accommodationDetail', {})
 
     def fetch_hotel_location(self, hotel_id):
@@ -88,7 +88,7 @@ class HotelFetcher:
             "variables": variables,
             "operationName": "AccommodationMap"
         }
-        data = infinite_retry_post(payload)
+        data = infinite_retry_post(payload).json()
         acc = data.get('data', {}).get('accommodation', {})
         if acc and acc.get('latitude') is not None and acc.get('longitude') is not None:
             return {
@@ -140,7 +140,7 @@ class HotelFetcher:
             "variables": variables,
             "operationName": "AccommodationLocations"
         }
-        data = infinite_retry_post(payload)
+        data = infinite_retry_post(payload).json()
         accs = data.get('data', {}).get('accommodations', {}).get('edges', [])
         loc_map = {}
         addr_map = {}
@@ -232,7 +232,7 @@ query ListPageDataIkyu($first: Int!, $offset: Int!, $searchAccommodationsInput: 
             "variables": base_variables,
             "operationName": "ListPageDataIkyu"
         }
-        data = infinite_retry_post(payload)
+        data = infinite_retry_post(payload).json()
         accommodations = data.get('data', {}).get('listPageIkyu', {}).get('accommodations', {})
         total_count = accommodations.get('totalCount', 0)
         logging.info(f"Total accommodations found: {total_count}")
@@ -257,7 +257,7 @@ query ListPageDataIkyu($first: Int!, $offset: Int!, $searchAccommodationsInput: 
                 "variables": base_variables,
                 "operationName": "ListPageDataIkyu"
             }
-            data = infinite_retry_post(payload)
+            data = infinite_retry_post(payload).json()
             accommodations = data.get('data', {}).get('listPageIkyu', {}).get('accommodations', {})
             edges = accommodations.get('edges', [])
             batch_hotels = []

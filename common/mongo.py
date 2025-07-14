@@ -14,6 +14,6 @@ def get_mongo_collections(mongodb_url=None):
     client = pymongo.MongoClient(mongodb_url)
     db = client["hotel_database"]
     hotels_collection = db["hotels_info"]
-    plan_price_collection = db.get("plan_prices")
-    plan_log_collection = db.get("plan_log")
+    plan_price_collection = db["plan_prices"]
+    plan_log_collection = db["plan_log"]
     return client, hotels_collection, plan_price_collection, plan_log_collection 
