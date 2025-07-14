@@ -7,10 +7,10 @@ import sys
 from datetime import datetime, timedelta, timezone
 from common.config import HOTEL_JSON, PLAN_FINAL_FILE
 from common.utils import get_process_hash_id, get_last_updated_at, get_now, infinite_retry_post
+from common.mongo import get_mongo_collections
 from .plan_fetcher import fetch_plans, meal_code_to_flags
 from .room_fetcher import fetch_rooms_batch
 from .calendar_fetcher import fetch_room_and_calendar, fetch_calendars_batch
-import pymongo
 import copy
 
 write_lock = threading.Lock()
@@ -35,7 +35,7 @@ def compare_hotel_data(existing_data, new_data):
     # Compare the cleaned data
     return existing_copy != new_copy
 
-batch_size = 20
+batch_size = 1
 
 def signal_handler(signum, frame):
     print(f"\nReceived signal {signum}. Gracefully shutting down...")
@@ -92,18 +92,7 @@ def run_all_hotels():
     Main function to fetch plan and room details for all hotels and update MongoDB.
     """
     # MongoDB setup
-    mongodb_uri = (
-        "mongodb://myfamily0402:UohZ4dEi5Ff0uD8J@"
-        "ac-irxctku-shard-00-00.rgnmyxs.mongodb.net:27017,"
-        "ac-irxctku-shard-00-01.rgnmyxs.mongodb.net:27017,"
-        "ac-irxctku-shard-00-02.rgnmyxs.mongodb.net:27017/"
-        "?ssl=true&replicaSet=atlas-116ae1-shard-0&authSource=admin"
-    )
-    client = pymongo.MongoClient(mongodb_uri)
-    db = client["hotel_database"]
-    hotels_collection = db["hotels_info"]
-    plan_price_collection = db["plan_prices"]
-    plan_log_collection = db["plan_log"]
+    client, hotels_collection, plan_price_collection, plan_log_collection = get_mongo_collections()
 
     process_stats = {
         "_id": None,  # will be set at start
@@ -235,7 +224,7 @@ def process_hotel(accommodation_id):
                 total_rooms += len(room_edges)
                 for room_edge in room_edges:
                     node = room_edge.get('node', {})
-                    room = node.get('room', {})
+                    room = node.get("room", {})
                     room_id = room.get("roomId")
                     room_name = room.get("name")
                     if not room_id:
