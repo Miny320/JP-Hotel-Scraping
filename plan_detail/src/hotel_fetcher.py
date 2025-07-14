@@ -35,7 +35,7 @@ def compare_hotel_data(existing_data, new_data):
     # Compare the cleaned data
     return existing_copy != new_copy
 
-batch_size = 1
+batch_size = 20
 
 def signal_handler(signum, frame):
     print(f"\nReceived signal {signum}. Gracefully shutting down...")
@@ -204,9 +204,9 @@ def process_hotel(accommodation_id):
             print(f"[Hotel {accommodation_id}] Processing adult_count: {adult_count}")
             plan_edges = fetch_plans(accommodation_id, adult_count)
             if not plan_edges:
-                print(f"[WARNING] [Hotel {accommodation_id}] No plans found for adult_count: {adult_count}")
+                print(f"[Hotel {accommodation_id}] No plans found for adult_count: {adult_count}")
                 continue
-            print(f"[DEBUG] [Hotel {accommodation_id}] Found {len(plan_edges)} plans for adult_count: {adult_count}")
+            print(f"[Hotel {accommodation_id}] Found {len(plan_edges)} plans for adult_count: {adult_count}")
             plan_id_to_edge = {}
             plan_ids = []
             for plan_edge in plan_edges:
@@ -280,12 +280,12 @@ def process_hotel(accommodation_id):
                         "dinner": dinner,
                         "rooms": rooms
                     })
-            print(f"[DEBUG] [Hotel {accommodation_id}] Completed adult_count: {adult_count} - {len(plans)} total plans so far")
+            print(f"[Hotel {accommodation_id}] Completed adult_count: {adult_count} - {len(plans)} total plans so far")
     except Exception as e:
         print(f"[Hotel {accommodation_id}] Error during processing: {e}")
         import traceback
         traceback.print_exc()
-    print(f"[DEBUG] Hotel {accommodation_id} - plans found: {len(plans)}")
+    print(f"Hotel {accommodation_id} - plans found: {len(plans)}")
     if not plans:
         print(f"[WARNING] No plans found for hotel {accommodation_id}")
     # Flatten plans/rooms into a single list as required
