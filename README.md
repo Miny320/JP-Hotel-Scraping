@@ -34,6 +34,13 @@ Jp_Hotel Scraping/
    ```bash
    pip install -r requirements.txt
    ```
+3. **Configure Environment Variables:**
+   - Create a `.env` file in the project root (or set environment variables directly).
+   - At minimum, set your MongoDB connection string:
+     ```env
+     MONGODB_URL=mongodb+srv://<username>:<password>@<cluster-url>/hotel_database?retryWrites=true&w=majority
+     ```
+   - You can also set proxy, headers, and other settings as needed.
 
 ## Usage
 
@@ -45,7 +52,7 @@ From the project root:
 python hotel_detail/main.py
 ```
 
-- This will create `hotel_detail/ikyu_all_hotel.json` with all hotel metadata.
+- This will create `hotel_detail/ikyu_all_hotel.json` with all hotel metadata and upload logs to MongoDB.
 
 ### 2. Scrape Plan and Room Details
 
@@ -55,12 +62,19 @@ From the project root:
 python plan_detail/main.py
 ```
 
-- This will read hotel IDs from `hotel_detail/ikyu_all_hotel.json` and save detailed plan/room data to `plan_detail/ikyu_all_hotels_final.json`.
+- This will read hotel IDs from `hotel_detail/ikyu_all_hotel.json` and save detailed plan/room data to `plan_detail/ikyu_all_hotels_final.json` and MongoDB.
 
 ## Configuration
 
+- All sensitive information (like MongoDB credentials) must be set via environment variables or a `.env` file. **Do not hardcode credentials in the code.**
 - Proxy, headers, and timezone settings can be adjusted in the respective `src/config.py` files.
 - Batch sizes and parallelism can be tuned in the code if needed.
+
+## Improvements
+
+- Improved error handling and logging for robustness and easier debugging.
+- All configuration is centralized and loaded from environment variables or config files.
+- No sensitive information is hardcoded in the codebase.
 
 ## Notes
 

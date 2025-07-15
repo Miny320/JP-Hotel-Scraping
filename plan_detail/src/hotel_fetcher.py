@@ -35,7 +35,7 @@ def compare_hotel_data(existing_data, new_data):
     # Compare the cleaned data
     return existing_copy != new_copy
 
-batch_size = 1
+batch_size = 20
 
 def signal_handler(signum, frame):
     print(f"\nReceived signal {signum}. Gracefully shutting down...")
