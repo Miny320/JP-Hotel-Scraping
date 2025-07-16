@@ -8,23 +8,18 @@ This project scrapes hotel and plan data from the Ikyu.com website using their G
 ## Project Structure
 
 ```
-Jp_Hotel Scraping/
+ikyu_scraper_new/
   hotel_detail/
     main.py
     src/
-      config.py
       hotel_fetcher.py
-      utils.py
-    ikyu_all_hotel.json
   plan_detail/
     main.py
     src/
-      config.py
+      calendar_fetcher.py
       hotel_fetcher.py
       plan_fetcher.py
       room_fetcher.py
-      calendar_fetcher.py
-      utils.py
 ```
 
 ## Setup
@@ -68,7 +63,7 @@ python plan_detail/main.py
 
 - All sensitive information (like MongoDB credentials) must be set via environment variables or a `.env` file. **Do not hardcode credentials in the code.**
 - Proxy, headers, and timezone settings can be adjusted in the respective `src/config.py` files.
-- Batch sizes and parallelism can be tuned in the code if needed.
+- **Batch size for room fetching is set to 20** for improved performance (see `plan_detail/src/hotel_fetcher.py`).
 
 ## Improvements
 
