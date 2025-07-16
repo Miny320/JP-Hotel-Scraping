@@ -231,7 +231,6 @@ def process_hotel(accommodation_id):
                     # Extract attributes and determine smoking_flag
                     attributes = room.get("attributes", [])
                     attribute_values = [attr.get("value") for attr in attributes]
-                    print(f"[Hotel {accommodation_id}] (ID: {room_id}) attribute values: {attribute_values}")
                     smoking_flag = '31' in attribute_values
                     # Guarantee smoking_flag is never None/null
                     if smoking_flag is None:
@@ -294,9 +293,7 @@ def process_hotel(accommodation_id):
         for room in plan["rooms"]:
             smoking_flag = room_smoking_flag_map.get(room["room_code"])
             if smoking_flag is None:
-                print(f"[WARNING] No smoking_flag for room_code: {room['room_code']} (plan_id: {plan['plan_id']}) - defaulting to False")
                 smoking_flag = False
-            print(f"[SAVE] plan_id: {plan['plan_id']}, room_code: {room['room_code']}, smoking_flag: {smoking_flag}")
             plans_flat.append({
                 "plan_id": plan["plan_id"],
                 "room_code": room["room_code"],
