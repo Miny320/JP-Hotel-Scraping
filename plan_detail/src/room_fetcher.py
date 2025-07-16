@@ -20,6 +20,10 @@ def fetch_rooms_batch(accommodation_id, plan_ids, adult_count):
               room {{
                 roomId
                 name
+                attributes {{
+                  value
+                  name
+                }}
               }}
             }}
           }}
@@ -89,6 +93,9 @@ def fetch_rooms_batch(accommodation_id, plan_ids, adult_count):
                                 room {
                                   roomId
                                   name
+                                  attributes {
+                                    {value}
+                                  }
                                 }
                               }
                             }

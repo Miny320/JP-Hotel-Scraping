@@ -213,6 +213,7 @@ def process_hotel(accommodation_id):
             room_plan_args = []
             plan_room_meta = {} 
             total_rooms = 0
+            room_smoking_flag_map = {}
             for plan_id in plan_ids:
                 plan_edge = plan_id_to_edge[plan_id]
                 plan_node = plan_edge.get('node', {})
@@ -227,9 +228,19 @@ def process_hotel(accommodation_id):
                     room = node.get("room", {})
                     room_id = room.get("roomId")
                     room_name = room.get("name")
+                    # Extract attributes and determine smoking_flag
+                    attributes = room.get("attributes", [])
+                    attribute_values = [attr.get("value") for attr in attributes]
+                    print(f"[Hotel {accommodation_id}] (ID: {room_id}) attribute values: {attribute_values}")
+                    smoking_flag = '31' in attribute_values
+                    # Guarantee smoking_flag is never None/null
+                    if smoking_flag is None:
+                        raise ValueError(f"Room {room_id} ('{room_name}') in hotel {accommodation_id} has no smoking/non-smoking attribute (20 or 31). Attributes: {attributes}")
                     if not room_id:
                         continue
                     room_plan_args.append((plan_id, room_id, room_name, plan_name, meal_code, breakfast, lunch, dinner, adult_count))
+                    # When processing each room, set the mapping by room_id only
+                    room_smoking_flag_map[room_id] = smoking_flag
                     plan_room_meta[(plan_id, room_id)] = (plan_name, meal_code, breakfast, lunch, dinner)
             print(f"[Hotel {accommodation_id}] Found {total_rooms} rooms across {len(plan_ids)} plans")
             if not room_plan_args:
@@ -281,6 +292,11 @@ def process_hotel(accommodation_id):
     plans_flat = []
     for plan in plans:
         for room in plan["rooms"]:
+            smoking_flag = room_smoking_flag_map.get(room["room_code"])
+            if smoking_flag is None:
+                print(f"[WARNING] No smoking_flag for room_code: {room['room_code']} (plan_id: {plan['plan_id']}) - defaulting to False")
+                smoking_flag = False
+            print(f"[SAVE] plan_id: {plan['plan_id']}, room_code: {room['room_code']}, smoking_flag: {smoking_flag}")
             plans_flat.append({
                 "plan_id": plan["plan_id"],
                 "room_code": room["room_code"],
@@ -290,7 +306,8 @@ def process_hotel(accommodation_id):
                 "breakfast": plan["breakfast"],
                 "lunch": plan["lunch"],
                 "dinner": plan["dinner"],
-                "prices": room["prices"]
+                "prices": room["prices"],
+                "smoking_flag": smoking_flag
             })
     hotel_data = {
         "hotel_id": accommodation_id,
